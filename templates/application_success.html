@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="page-hero">
+    <p class="label">Danke</p>
+    <h1>Anmeldung erhalten</h1>
+    <p>
+        Vielen Dank für deine Anmeldung. Wir haben deine Angaben erhalten
+        und melden uns zeitnah bei dir.
+    </p>
+
+    <a href="{% url 'home' %}" class="button button-primary">
+        Zurück zur Startseite
+    </a>
+</section>
+
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="page-hero">
+    <p class="label"></p>
+    <h1>Events</h1>
+    <p>
+        Hier findest du unsere kommenden Termine.
+    </p>
+</section>
+
+<section class="event-list">
+
+    {% for event in events %}
+        <article class="event-card">
+            <p class="event-date">{{ event.date }}</p>
+
+            <h2>{{ event.title }}</h2>
+
+            <p class="event-location">
+                {{ event.location }}
+            </p>
+
+            <p>
+                {{ event.description }}
+            </p>
+        </article>
+    {% empty %}
+        <p class="empty-text">
+            Aktuell sind noch keine Events eingetragen.
+        </p>
+    {% endfor %}
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<section class="hero">
+    <div class="hero-inner">
+        <img src="{% static 'img/logo.png' %}" alt="KunstPunkt Logo" class="hero-logo">
+
+        <p class="hero-subtitle">
+            Offene Bühne und Galerie in Marburg.
+        </p>
+
+        <p class="hero-text">
+            Einmal im Monat schaffen wir Raum für Kunst, Musik, Text, Performance,
+            Ausstellung, Begegnung und experimentelle Formate.
+        </p>
+
+        <div class="hero-buttons">
+            <a href="{% url 'event_list' %}" class="button button-primary">Nächste Events</a>
+            <a href="{% url 'galerie' %}" class="button button-secondary">Zur Galerie</a>
+        </div>
+    </div>
+</section>
+
+<section class="intro-section">
+    <h1>Was ist KunstPunkt?</h1>
+
+    <p>
+        KunstPunkt ist ein offenes Kunst- und Bühnenformat in Marburg.
+        Willkommen sind Künstler:innen aus unterschiedlichen Bereichen:
+        Musik, Lesung, Performance, bildende Kunst, Fotografie, Tanz,
+        Kurzfilm und alles, was dazwischen liegt.
+    </p>
+</section>
+
+<section class="info-grid">
+    <article class="info-card">
+        <h2>Offene Bühne</h2>
+        <p>
+            Zeig einen Beitrag mit einem offenen Publikum.
+        </p>
+    </article>
+
+    <article class="info-card">
+        <h2>Galerie</h2>
+        <p>
+            Neben der Bühne gibt es Raum für visuelle Arbeiten, Installationen,
+            Fotografien und andere künstlerische Positionen.
+        </p>
+    </article>
+
+    <article class="info-card">
+        <h2>Mitmachen</h2>
+        <p>
+            Künstler:innen können sich für kommende Termine anmelden.
+            
+        </p>
+    </article>
+</section>
+
+{% endblock %}

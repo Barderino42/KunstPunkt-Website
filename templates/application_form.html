@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="application-hero">
+    <div class="application-hero-inner">
+        <p class="label"></p>
+
+        <h1>Anmeldung</h1>
+
+        <p>
+            Du möchtest bei KunstPunkt auftreten, ausstellen, lesen, performen,
+            Musik machen oder ein visuelles Projekt zeigen? Dann füll dieses Formular aus.
+            Wir melden uns anschließend zur weiteren Planung bei dir.
+        </p>
+    </div>
+</section>
+
+<section class="application-layout">
+
+    <aside class="application-info">
+        <h2>Infos für Künstler:innen</h2>
+
+        <p>
+            KunstPunkt ist eine offene Bühne und Galerie im Café Trauma in Marburg.
+            Unser Ziel ist es, einen Raum zu schaffen, in dem wir gemeinsam Kunst
+            erleben und teilen können — egal ob du Profi bist oder zum ersten Mal
+            auf der Bühne stehst.
+        </p>
+
+        <p>
+            Wir legen großen Wert auf einen achtsamen und diskriminierungsfreien Raum.
+            KunstPunkt soll für alle Beteiligten vor, auf und hinter der Bühne ein sicherer
+            und niedrigschwelliger Ort sein.
+        </p>
+
+        <h3>Bühne</h3>
+        <ul>
+            <li>Pro Abend gibt es bis zu 8 offene Slots.</li>
+            <li>Die Plätze werden im Vorfeld vergeben.</li>
+            <li>Wir selektieren die Beiträge nicht.</li>
+            <li>Bei uns ist Platz für jede Form der Performance.</li>
+        </ul>
+
+        <h3>Galerie</h3>
+        <p>
+            Parallel zum Bühnenprogramm wird das Café Trauma zur Ausstellung.
+            Vor der Show, in der Pause und nach dem Programm können Gäste die
+            ausgestellten Arbeiten betrachten.
+        </p>
+
+        <h3>Jam Session</h3>
+        <p>
+            Nach dem offiziellen Programm öffnen wir die Bühne für alle.
+            Dafür braucht es keine feste Anmeldung — jede:r kann spontan einsteigen.
+        </p>
+
+        <h3>Zeitplan</h3>
+        <ul>
+            <li><strong>18:30 Uhr:</strong> Briefing und Soundcheck für alle Bühnen-Acts.</li>
+            <li>Galerie-Aufbau koordinieren wir individuell mit dir.</li>
+            <li>Wenn deine Installation mehr Zeit braucht, kannst du nach Absprache früher kommen.</li>
+        </ul>
+
+        <h3>Ort</h3>
+        <p>
+            Café Trauma<br>
+            Afföllerwiesen 3a<br>
+            35039 Marburg
+        </p>
+
+        <p class="small-note">
+            Falls du doch nicht kannst, gib uns bitte so früh wie möglich Bescheid,
+            damit wir deinen Slot weitergeben können.
+        </p>
+    </aside>
+
+    <form method="post" class="application-form-card">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <h2>Termin & Kontakt</h2>
+
+            <div class="form-field">
+                <label for="{{ form.event.id_for_label }}">
+                    {{ form.event.label }}
+                </label>
+                {{ form.event }}
+                {% for error in form.event.errors %}
+                    <p class="error-text">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div class="form-two-columns">
+                <div class="form-field">
+                    <label for="{{ form.name.id_for_label }}">
+                        {{ form.name.label }}
+                    </label>
+                    {{ form.name }}
+                    {% for error in form.name.errors %}
+                        <p class="error-text">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.email.id_for_label }}">
+                        {{ form.email.label }}
+                    </label>
+                    {{ form.email }}
+                    {% for error in form.email.errors %}
+                        <p class="error-text">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-two-columns">
+                <div class="form-field">
+                    <label for="{{ form.instagram_contact.id_for_label }}">
+                        {{ form.instagram_contact.label }}
+                    </label>
+                    {{ form.instagram_contact }}
+                    {% for error in form.instagram_contact.errors %}
+                        <p class="error-text">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.phone.id_for_label }}">
+                        {{ form.phone.label }}
+                    </label>
+                    {{ form.phone }}
+                    {% for error in form.phone.errors %}
+                        <p class="error-text">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <h2>Dein Beitrag</h2>
+
+            <div class="form-two-columns">
+                <div class="form-field">
+                    <label for="{{ form.art_form.id_for_label }}">
+                        {{ form.art_form.label }}
+                    </label>
+                    {{ form.art_form }}
+                    {% for error in form.art_form.errors %}
+                        <p class="error-text">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.contribution_title.id_for_label }}">
+                        {{ form.contribution_title.label }}
+                    </label>
+                    {{ form.contribution_title }}
+                    {% for error in form.contribution_title.errors %}
+                        <p class="error-text">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-field">
+                <label for="{{ form.description.id_for_label }}">
+                    {{ form.description.label }}
+                </label>
+                {{ form.description }}
+                {% for error in form.description.errors %}
+                    <p class="error-text">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div class="form-field small-field">
+                <label for="{{ form.duration_minutes.id_for_label }}">
+                    {{ form.duration_minutes.label }}
+                </label>
+                {{ form.duration_minutes }}
+                {% for error in form.duration_minutes.errors %}
+                    <p class="error-text">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <h2>Technik auf der Bühne</h2>
+
+            <p class="form-note">
+                Vor Ort vorhanden sind PA, Monitoring, Mischpult, Mikrofone,
+                Mikrofonständer, DI-Boxen, Bluetooth-Zuspielung, ePiano,
+                Gitarrenverstärker, Bassverstärker und Schlagzeug.
+            </p>
+
+            <p class="form-note">
+                Bitte gib unbedingt an, wenn du das Schlagzeug, spezielle Adapter,
+                Beamer, Leinwand, Playbacks oder besondere Aufbauzeit brauchst.
+            </p>
+
+            <div class="form-field">
+                <label for="{{ form.technical_needs.id_for_label }}">
+                    {{ form.technical_needs.label }}
+                </label>
+                {{ form.technical_needs }}
+                {% for error in form.technical_needs.errors %}
+                    <p class="error-text">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <h2>Hinweis für Ausstellungen</h2>
+
+            <p class="form-note">
+                Für die Galerie nutzen wir die große rote Backsteinwand gegenüber
+                der Bühne sowie das Foyer. Vor Ort gibt es unter anderem Galerieschienen,
+                Nägel, Leinen, Reißzwecken, Stellwände, Klebeband, Klebepads und
+                spezielle Lampen zur Inszenierung der Werke.
+            </p>
+
+            <p class="form-note">
+                Bitte gib bei der Anmeldung unbedingt an, wenn du für deine Ausstellung
+                besondere Hängung, Aufhängung, Beleuchtung oder andere technische
+                Ausstattung brauchst.
+        </div>
+
+        <div class="form-group">
+            <h2>Kurzfilme & visuelle Projekte</h2>
+
+            <p class="form-note">
+                Im Café Trauma gibt es einen Kinosaal. Wenn du Kurzfilme oder visuelle
+                Projekte zeigen möchtest, ist das nach Absprache möglich. Bitte melde
+                solche Projekte mit ausreichend Vorlauf an, damit die Technik vorbereitet
+                werden kann.
+            </p>
+        </div>
+
+        <div class="privacy-box">
+            <label class="checkbox-label" for="{{ form.consent_privacy.id_for_label }}">
+                {{ form.consent_privacy }}
+                <span>{{ form.consent_privacy.label }}</span>
+            </label>
+
+            {% for error in form.consent_privacy.errors %}
+                <p class="error-text">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="button button-primary form-submit">
+            Anmeldung abschicken
+        </button>
+    </form>
+
+</section>
+
+{% endblock %}
