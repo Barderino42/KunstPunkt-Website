@@ -1,0 +1,18 @@
+# Secrets / local config
+.env
+
+# Virtual environments
+.venv/
+.venv_old/
+venv/
+
+# Django local/runtime files
+db.sqlite3
+media/
+staticfiles/
+backups/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
