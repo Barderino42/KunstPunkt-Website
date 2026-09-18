@@ -606,3 +606,10 @@ body {
     line-height: 1.6;
     color: var(--muted);
 }
+.gallery-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    margin-bottom: 24px;
+}

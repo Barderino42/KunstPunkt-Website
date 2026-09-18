@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Event, ArtistApplication
+from .models import Event, ArtistApplication, GalleryImage
 
 
 @admin.register(Event)
@@ -40,3 +40,9 @@ class ArtistApplicationAdmin(admin.ModelAdmin):
     readonly_fields = (
         "created_at",
     )
+
+@admin.register(GalleryImage)
+class GalleryImageAdmin(admin.ModelAdmin):
+    list_display = ("title", "is_published", "created_at")
+    list_filter = ("is_published", "created_at")
+    search_fields = ("title", "description")

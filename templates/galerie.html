@@ -3,44 +3,38 @@
 {% block content %}
 
 <section class="page-hero">
-    <p class="label"></p>
+    <p class="label">Rückblicke</p>
     <h1>Galerie</h1>
     <p>
-        Eindrücke vergangener KunstPunkt-Abende.
+        Eindrücke vergangener KunstPunkt-Abende im Café Trauma.
     </p>
 </section>
 
 <section class="gallery-grid">
 
-    <article class="gallery-card">
-        <div class="gallery-placeholder">
-            Bild folgt
-        </div>
-        <h2>KunstPunkt Abend</h2>
-        <p>
-            Hier entsteht ein Rückblick mit Fotos, Texten und Eindrücken.
-        </p>
-    </article>
+    {% for image in images %}
+        <article class="gallery-card">
+            <img src="{{ image.image.url }}" alt="{{ image.title }}" class="gallery-image">
 
-    <article class="gallery-card">
-        <div class="gallery-placeholder">
-            Bild folgt
-        </div>
-        <h2>Offene Bühne</h2>
-        <p>
-            Musik, Texte, Performance und Begegnungen aus vergangenen Abenden.
-        </p>
-    </article>
+            <h2>{{ image.title }}</h2>
 
-    <article class="gallery-card">
-        <div class="gallery-placeholder">
-            Bild folgt
-        </div>
-        <h2>Ausstellung</h2>
-        <p>
-            Eindrücke aus der Galerie und von künstlerischen Beiträgen.
-        </p>
-    </article>
+            {% if image.description %}
+                <p>
+                    {{ image.description }}
+                </p>
+            {% endif %}
+        </article>
+    {% empty %}
+        <article class="gallery-card">
+            <div class="gallery-placeholder">
+                Bild folgt
+            </div>
+            <h2>Noch keine Bilder</h2>
+            <p>
+                Hier erscheinen bald Eindrücke unserer vergangenen KunstPunkt-Abende.
+            </p>
+        </article>
+    {% endfor %}
 
 </section>
 

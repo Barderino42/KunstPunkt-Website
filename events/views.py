@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from .models import Event
 from .forms import ArtistApplicationForm
+from .models import Event, GalleryImage
 
 
 def home(request):
@@ -13,7 +13,8 @@ def event_list(request):
 
 
 def galerie(request):
-    return render(request, "galerie.html")
+    images = GalleryImage.objects.filter(is_published=True).order_by("-created_at")
+    return render(request, "galerie.html", {"images": images})
 
 
 def application_create(request):

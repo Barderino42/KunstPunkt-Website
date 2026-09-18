@@ -121,3 +121,33 @@ class ArtistApplication(models.Model):
 
     def __str__(self):
         return f"{self.name} – {self.event}"
+    
+class GalleryImage(models.Model):
+    title = models.CharField(
+        max_length=200,
+        verbose_name="Titel"
+    )
+
+    description = models.TextField(
+        blank=True,
+        default="",
+        verbose_name="Beschreibung"
+    )
+
+    image = models.ImageField(
+        upload_to="gallery/",
+        verbose_name="Bild"
+    )
+
+    created_at = models.DateTimeField(
+        default=timezone.now,
+        verbose_name="Erstellt am"
+    )
+
+    is_published = models.BooleanField(
+        default=True,
+        verbose_name="Veröffentlicht"
+    )
+
+    def __str__(self):
+        return self.title
