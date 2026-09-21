@@ -32,3 +32,6 @@ def application_create(request):
 
 def application_success(request):
     return render(request, "application_success.html")
+
+def impressum(request):
+    return render(request, "impressum.html")
