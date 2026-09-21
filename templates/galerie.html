@@ -2,40 +2,250 @@
 
 {% block content %}
 
-<section class="page-hero">
+<section class="page-hero gallery-hero">
     <p class="label">Rückblicke</p>
+
     <h1>Galerie</h1>
+
     <p>
-        Eindrücke vergangener KunstPunkt-Abende im Café Trauma.
+        Hier sammeln wir Eindrücke vergangener KunstPunkt-Abende im Café Trauma.
+        Die Bilder und Videos sind nach Veranstaltungen sortiert.
     </p>
 </section>
 
-<section class="gallery-grid">
+<section class="album-list">
 
-    {% for image in images %}
-        <article class="gallery-card">
-            <img src="{{ image.image.url }}" alt="{{ image.title }}" class="gallery-image">
+    {% for album in albums %}
 
-            <h2>{{ image.title }}</h2>
+        <article class="album-section">
 
-            {% if image.description %}
-                <p>
-                    {{ image.description }}
-                </p>
-            {% endif %}
+            <div class="album-header">
+                <div>
+                    <p class="label">Album</p>
+
+                    <h2>{{ album.title }}</h2>
+
+                    {% if album.date %}
+                        <p class="album-date">
+                            {{ album.date|date:"d.m.Y" }}
+                        </p>
+                    {% endif %}
+                </div>
+
+                {% if album.description %}
+                    <p class="album-description">
+                        {{ album.description }}
+                    </p>
+                {% endif %}
+            </div>
+
+            <div class="album-grid">
+
+                {% for media in album.images.all %}
+
+                    <figure class="album-image-card">
+
+                        {% if media.image %}
+
+                            <button
+                                type="button"
+                                class="lightbox-trigger"
+                                data-full-image="{{ media.image.url }}"
+                                data-full-title="{% if media.title %}{{ media.title }}{% else %}{{ album.title }}{% endif %}"
+                                data-full-album="{{ album.title }}"
+                            >
+                                <img
+                                    src="{{ media.image.url }}"
+                                    alt="{% if media.title %}{{ media.title }}{% else %}Bild aus {{ album.title }}{% endif %}"
+                                    class="album-image"
+                                >
+                            </button>
+
+                        {% elif media.video %}
+
+                            <video class="album-video" controls preload="metadata">
+                                <source src="{{ media.video.url }}">
+                                Dein Browser kann dieses Video nicht abspielen.
+                            </video>
+
+                        {% else %}
+
+                            <div class="gallery-placeholder">
+                                Bild oder Video folgt
+                            </div>
+
+                        {% endif %}
+
+                        {% if media.title or media.description %}
+                            <figcaption>
+                                {% if media.title %}
+                                    <strong>{{ media.title }}</strong>
+                                {% endif %}
+
+                                {% if media.description %}
+                                    <span>{{ media.description }}</span>
+                                {% endif %}
+                            </figcaption>
+                        {% endif %}
+
+                    </figure>
+
+                {% empty %}
+
+                    <div class="gallery-empty-card">
+                        <div class="gallery-placeholder">
+                            Bild folgt
+                        </div>
+
+                        <p>
+                            Für dieses Album wurden noch keine Bilder oder Videos hochgeladen.
+                        </p>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
         </article>
+
     {% empty %}
-        <article class="gallery-card">
+
+        <article class="gallery-empty-state">
             <div class="gallery-placeholder">
                 Bild folgt
             </div>
-            <h2>Noch keine Bilder</h2>
+
+            <h2>Noch keine Galerie-Alben</h2>
+
             <p>
-                Hier erscheinen bald Eindrücke unserer vergangenen KunstPunkt-Abende.
+                Hier erscheinen bald Rückblicke vergangener KunstPunkt-Abende.
             </p>
         </article>
+
     {% endfor %}
 
 </section>
+
+<div class="lightbox" id="gallery-lightbox" aria-hidden="true">
+    <button type="button" class="lightbox-close" aria-label="Bild schließen">
+        ×
+    </button>
+
+    <button type="button" class="lightbox-arrow lightbox-arrow-left" aria-label="Vorheriges Bild">
+        ‹
+    </button>
+
+    <div class="lightbox-inner">
+        <img src="" alt="" id="lightbox-image">
+        <p id="lightbox-caption"></p>
+        <p id="lightbox-counter"></p>
+    </div>
+
+    <button type="button" class="lightbox-arrow lightbox-arrow-right" aria-label="Nächstes Bild">
+        ›
+    </button>
+</div>
+
+<script>
+    const lightbox = document.getElementById("gallery-lightbox");
+    const lightboxImage = document.getElementById("lightbox-image");
+    const lightboxCaption = document.getElementById("lightbox-caption");
+    const lightboxCounter = document.getElementById("lightbox-counter");
+
+    const lightboxClose = document.querySelector(".lightbox-close");
+    const lightboxPrevious = document.querySelector(".lightbox-arrow-left");
+    const lightboxNext = document.querySelector(".lightbox-arrow-right");
+
+    const triggers = Array.from(document.querySelectorAll(".lightbox-trigger"));
+
+    let currentImageIndex = 0;
+
+    function showImage(index) {
+        if (triggers.length === 0) {
+            return;
+        }
+
+        if (index < 0) {
+            currentImageIndex = triggers.length - 1;
+        } else if (index >= triggers.length) {
+            currentImageIndex = 0;
+        } else {
+            currentImageIndex = index;
+        }
+
+        const trigger = triggers[currentImageIndex];
+
+        const imageUrl = trigger.getAttribute("data-full-image");
+        const imageTitle = trigger.getAttribute("data-full-title");
+        const imageAlbum = trigger.getAttribute("data-full-album");
+
+        lightboxImage.src = imageUrl;
+        lightboxImage.alt = imageTitle;
+
+        lightboxCaption.textContent = imageAlbum + " – " + imageTitle;
+        lightboxCounter.textContent = (currentImageIndex + 1) + " / " + triggers.length;
+    }
+
+    function openLightbox(index) {
+        showImage(index);
+
+        lightbox.classList.add("is-open");
+        lightbox.setAttribute("aria-hidden", "false");
+        document.body.classList.add("lightbox-open");
+    }
+
+    function closeLightbox() {
+        lightbox.classList.remove("is-open");
+        lightbox.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("lightbox-open");
+
+        lightboxImage.src = "";
+        lightboxImage.alt = "";
+        lightboxCaption.textContent = "";
+        lightboxCounter.textContent = "";
+    }
+
+    function showPreviousImage() {
+        showImage(currentImageIndex - 1);
+    }
+
+    function showNextImage() {
+        showImage(currentImageIndex + 1);
+    }
+
+    triggers.forEach((trigger, index) => {
+        trigger.addEventListener("click", () => {
+            openLightbox(index);
+        });
+    });
+
+    lightboxClose.addEventListener("click", closeLightbox);
+    lightboxPrevious.addEventListener("click", showPreviousImage);
+    lightboxNext.addEventListener("click", showNextImage);
+
+    lightbox.addEventListener("click", (event) => {
+        if (event.target === lightbox) {
+            closeLightbox();
+        }
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (!lightbox.classList.contains("is-open")) {
+            return;
+        }
+
+        if (event.key === "Escape") {
+            closeLightbox();
+        }
+
+        if (event.key === "ArrowLeft") {
+            showPreviousImage();
+        }
+
+        if (event.key === "ArrowRight") {
+            showNextImage();
+        }
+    });
+</script>
 
 {% endblock %}
