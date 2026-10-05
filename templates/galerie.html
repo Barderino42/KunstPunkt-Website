@@ -36,14 +36,31 @@
     padding: 0 !important;
   }
 
-  .gallery-item img,
-  .gallery-item video {
+  .gallery-trigger {
+    width: 100%;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .gallery-trigger img,
+  .gallery-trigger video {
     width: 100% !important;
     height: 220px !important;
     max-width: 100% !important;
     object-fit: cover !important;
     display: block !important;
     border-radius: 10px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .gallery-trigger:hover img,
+  .gallery-trigger:hover video {
+    transform: scale(1.02);
+    opacity: 0.9;
   }
 
   .gallery-item figcaption {
@@ -52,15 +69,111 @@
     line-height: 1.4;
   }
 
+  .lightbox {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+    align-items: center;
+    justify-content: center;
+    padding: 40px 70px;
+  }
+
+  .lightbox.is-open {
+    display: flex;
+  }
+
+  .lightbox-content {
+    max-width: 90vw;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .lightbox-media img,
+  .lightbox-media video {
+    max-width: 90vw;
+    max-height: 78vh;
+    object-fit: contain;
+    display: block;
+    border-radius: 8px;
+  }
+
+  .lightbox-caption {
+    margin-top: 14px;
+    color: white;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .lightbox-close,
+  .lightbox-prev,
+  .lightbox-next {
+    position: fixed;
+    border: 0;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    cursor: pointer;
+    border-radius: 999px;
+    font-size: 2rem;
+    line-height: 1;
+    width: 48px;
+    height: 48px;
+  }
+
+  .lightbox-close:hover,
+  .lightbox-prev:hover,
+  .lightbox-next:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .lightbox-close {
+    top: 24px;
+    right: 24px;
+  }
+
+  .lightbox-prev {
+    left: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .lightbox-next {
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
   @media (max-width: 700px) {
     .gallery-grid {
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
       gap: 16px !important;
     }
 
-    .gallery-item img,
-    .gallery-item video {
+    .gallery-trigger img,
+    .gallery-trigger video {
       height: 160px !important;
+    }
+
+    .lightbox {
+      padding: 30px 16px;
+    }
+
+    .lightbox-prev,
+    .lightbox-next {
+      width: 42px;
+      height: 42px;
+      font-size: 1.6rem;
+    }
+
+    .lightbox-prev {
+      left: 10px;
+    }
+
+    .lightbox-next {
+      right: 10px;
     }
   }
 </style>
@@ -81,13 +194,26 @@
           {% for media in album.images.all %}
             {% if media.is_published %}
               <figure class="gallery-item">
-                {% if media.image %}
-                  <img src="{{ media.image.url }}" alt="{{ media.title|default:'Galeriebild' }}">
-                {% elif media.video %}
-                  <video controls>
-                    <source src="{{ media.video.url }}">
-                  </video>
-                {% endif %}
+                <button
+                  class="gallery-trigger"
+                  type="button"
+                  data-title="{{ media.title|default:'Galeriebild' }}"
+                  {% if media.image %}
+                    data-type="image"
+                    data-src="{{ media.image.url }}"
+                  {% elif media.video %}
+                    data-type="video"
+                    data-src="{{ media.video.url }}"
+                  {% endif %}
+                >
+                  {% if media.image %}
+                    <img src="{{ media.image.url }}" alt="{{ media.title|default:'Galeriebild' }}">
+                  {% elif media.video %}
+                    <video muted preload="metadata">
+                      <source src="{{ media.video.url }}">
+                    </video>
+                  {% endif %}
+                </button>
 
                 {% if media.title %}
                   <figcaption>{{ media.title }}</figcaption>
@@ -104,5 +230,116 @@
     <p>Es wurden noch keine Galerie-Alben veröffentlicht.</p>
   {% endif %}
 </section>
+
+<div class="lightbox" id="gallery-lightbox" aria-hidden="true">
+  <button class="lightbox-close" type="button" aria-label="Schließen">×</button>
+  <button class="lightbox-prev" type="button" aria-label="Vorheriges Bild">‹</button>
+
+  <div class="lightbox-content">
+    <div class="lightbox-media" id="lightbox-media"></div>
+    <div class="lightbox-caption" id="lightbox-caption"></div>
+  </div>
+
+  <button class="lightbox-next" type="button" aria-label="Nächstes Bild">›</button>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const triggers = Array.from(document.querySelectorAll(".gallery-trigger"));
+    const lightbox = document.getElementById("gallery-lightbox");
+    const mediaContainer = document.getElementById("lightbox-media");
+    const caption = document.getElementById("lightbox-caption");
+    const closeButton = document.querySelector(".lightbox-close");
+    const prevButton = document.querySelector(".lightbox-prev");
+    const nextButton = document.querySelector(".lightbox-next");
+
+    let currentIndex = 0;
+
+    function openLightbox(index) {
+      currentIndex = index;
+      showMedia(currentIndex);
+      lightbox.classList.add("is-open");
+      lightbox.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove("is-open");
+      lightbox.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      mediaContainer.innerHTML = "";
+    }
+
+    function showMedia(index) {
+      const item = triggers[index];
+      const src = item.dataset.src;
+      const type = item.dataset.type;
+      const title = item.dataset.title || "";
+
+      mediaContainer.innerHTML = "";
+
+      if (type === "image") {
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = title || "Galeriebild";
+        mediaContainer.appendChild(img);
+      }
+
+      if (type === "video") {
+        const video = document.createElement("video");
+        video.src = src;
+        video.controls = true;
+        video.autoplay = true;
+        mediaContainer.appendChild(video);
+      }
+
+      caption.textContent = title;
+    }
+
+    function showPrevious() {
+      currentIndex = (currentIndex - 1 + triggers.length) % triggers.length;
+      showMedia(currentIndex);
+    }
+
+    function showNext() {
+      currentIndex = (currentIndex + 1) % triggers.length;
+      showMedia(currentIndex);
+    }
+
+    triggers.forEach(function (trigger, index) {
+      trigger.addEventListener("click", function () {
+        openLightbox(index);
+      });
+    });
+
+    closeButton.addEventListener("click", closeLightbox);
+    prevButton.addEventListener("click", showPrevious);
+    nextButton.addEventListener("click", showNext);
+
+    lightbox.addEventListener("click", function (event) {
+      if (event.target === lightbox) {
+        closeLightbox();
+      }
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (!lightbox.classList.contains("is-open")) {
+        return;
+      }
+
+      if (event.key === "Escape") {
+        closeLightbox();
+      }
+
+      if (event.key === "ArrowLeft") {
+        showPrevious();
+      }
+
+      if (event.key === "ArrowRight") {
+        showNext();
+      }
+    });
+  });
+</script>
 
 {% endblock %}
