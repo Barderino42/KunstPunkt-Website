@@ -17,21 +17,20 @@
 
         <div class="gallery-grid">
           {% for media in album.images.all %}
-            {% if media.is_published %}
-              <figure class="gallery-item">
-                {% if media.image %}
-                  <img src="{{ media.image.url }}" alt="{{ media.title }}">
-                {% elif media.video %}
-                  <video controls>
-                    <source src="{{ media.video.url }}">
-                  </video>
-                {% endif %}
+            <figure class="gallery-item">
+              {% if media.image %}
+                <img src="{{ media.image.url }}" alt="{{ media.title }}">
+              {% elif media.video %}
+                <video controls>
+                  <source src="{{ media.video.url }}">
+                  Dein Browser unterstützt dieses Videoformat nicht.
+                </video>
+              {% endif %}
 
-                {% if media.title %}
-                  <figcaption>{{ media.title }}</figcaption>
-                {% endif %}
-              </figure>
-            {% endif %}
+              {% if media.title %}
+                <figcaption>{{ media.title }}</figcaption>
+              {% endif %}
+            </figure>
           {% empty %}
             <p>In diesem Album sind noch keine Bilder veröffentlicht.</p>
           {% endfor %}

@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
+from django.db.models import Prefetch, Q
+
+from .models import Event, GalleryAlbum, GalleryImage
 from .forms import ArtistApplicationForm
-from .models import Event, GalleryImage
 
 
 def home(request):
@@ -13,14 +15,27 @@ def event_list(request):
 
 
 def galerie(request):
-    images = GalleryImage.objects.filter(is_published=True).order_by("-created_at")
-    return render(request, "galerie.html", {"images": images})
+    published_media = (
+        GalleryImage.objects
+        .filter(is_published=True)
+        .filter(Q(image__isnull=False) | Q(video__isnull=False))
+        .exclude(image="", video="")
+        .order_by("created_at")
+    )
+
+    albums = (
+        GalleryAlbum.objects
+        .filter(is_published=True)
+        .prefetch_related(Prefetch("images", queryset=published_media))
+        .order_by("-date", "-created_at")
+    )
+
+    return render(request, "galerie.html", {"albums": albums})
 
 
 def application_create(request):
     if request.method == "POST":
         form = ArtistApplicationForm(request.POST)
-
         if form.is_valid():
             form.save()
             return redirect("application_success")
@@ -32,6 +47,7 @@ def application_create(request):
 
 def application_success(request):
     return render(request, "application_success.html")
+
 
 def impressum(request):
     return render(request, "impressum.html")
