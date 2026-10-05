@@ -3,7 +3,69 @@
 {% block title %}Galerie | KunstPunkt Marburg{% endblock %}
 
 {% block content %}
-<section class="page-section">
+
+<style>
+  .gallery-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px 80px 24px;
+  }
+
+  .gallery-page h1 {
+    margin-bottom: 32px;
+  }
+
+  .gallery-album {
+    margin-bottom: 64px;
+  }
+
+  .gallery-album h2 {
+    font-size: 2rem;
+    margin-bottom: 24px;
+  }
+
+  .gallery-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+    gap: 24px !important;
+    align-items: start !important;
+  }
+
+  .gallery-item {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .gallery-item img,
+  .gallery-item video {
+    width: 100% !important;
+    height: 220px !important;
+    max-width: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+    border-radius: 10px;
+  }
+
+  .gallery-item figcaption {
+    margin-top: 8px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 700px) {
+    .gallery-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+      gap: 16px !important;
+    }
+
+    .gallery-item img,
+    .gallery-item video {
+      height: 160px !important;
+    }
+  }
+</style>
+
+<section class="gallery-page">
   <h1>Galerie</h1>
 
   {% if albums %}
@@ -17,20 +79,21 @@
 
         <div class="gallery-grid">
           {% for media in album.images.all %}
-            <figure class="gallery-item">
-              {% if media.image %}
-                <img src="{{ media.image.url }}" alt="{{ media.title }}">
-              {% elif media.video %}
-                <video controls>
-                  <source src="{{ media.video.url }}">
-                  Dein Browser unterstützt dieses Videoformat nicht.
-                </video>
-              {% endif %}
+            {% if media.is_published %}
+              <figure class="gallery-item">
+                {% if media.image %}
+                  <img src="{{ media.image.url }}" alt="{{ media.title|default:'Galeriebild' }}">
+                {% elif media.video %}
+                  <video controls>
+                    <source src="{{ media.video.url }}">
+                  </video>
+                {% endif %}
 
-              {% if media.title %}
-                <figcaption>{{ media.title }}</figcaption>
-              {% endif %}
-            </figure>
+                {% if media.title %}
+                  <figcaption>{{ media.title }}</figcaption>
+                {% endif %}
+              </figure>
+            {% endif %}
           {% empty %}
             <p>In diesem Album sind noch keine Bilder veröffentlicht.</p>
           {% endfor %}
@@ -41,4 +104,5 @@
     <p>Es wurden noch keine Galerie-Alben veröffentlicht.</p>
   {% endif %}
 </section>
+
 {% endblock %}
